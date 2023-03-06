@@ -3,9 +3,10 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/junhyuk0801/golang-grpc-practice/unary/client/pb"
+	"github.com/junhyuk0801/golang-grpc-practice/server_streaming/client/pb"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+	"io"
 	"log"
 	"math/rand"
 	"time"
@@ -14,26 +15,38 @@ import (
 const HOST string = "localhost"
 const PORT int = 8484
 
-type UnaryClient struct {
-	client pb.UnaryClient
+type ServerStreamingClient struct {
+	client pb.ServerStreamingClient
 }
 
-func (c *UnaryClient) Call(num int) (int, error) {
+func (c *ServerStreamingClient) Call(num int) ([]int, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
 
 	input := &pb.SingleData{Num: int32(num)}
-	pow, err := c.client.Call(ctx, input)
+	stream, err := c.client.Call(ctx, input)
 	if err != nil {
-		return 0, err
+		return nil, nil
 	}
 
-	return int(pow.Num), nil
+	res := make([]int, 0, 0)
+	for {
+		num, err := stream.Recv()
+		if err == io.EOF {
+			break
+		} else if err != nil {
+			return nil, nil
+		} else {
+			res = append(res, int(num.Num))
+		}
+	}
+
+	return res, nil
 }
 
-func newClient(conn *grpc.ClientConn) *UnaryClient {
-	return &UnaryClient{
-		client: pb.NewUnaryClient(conn),
+func newClient(conn *grpc.ClientConn) *ServerStreamingClient {
+	return &ServerStreamingClient{
+		client: pb.NewServerStreamingClient(conn),
 	}
 }
 
@@ -54,7 +67,7 @@ func main() {
 	rand.Seed(time.Now().UnixNano())
 
 	for {
-		num := randInt(1, 100)
+		num := randInt(1, 10)
 		val, err := client.Call(num)
 		if err != nil {
 			log.Fatalf("failed to call: %v", err)

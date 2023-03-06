@@ -19,7 +19,7 @@ type UnaryServer struct {
 
 func (s *UnaryServer) Call(ctx context.Context, input *pb.SingleData) (*pb.SingleData, error) {
 	p, _ := peer.FromContext(ctx)
-	log.Printf("got %d from user %s", input.Num, p.Addr.String())
+	log.Printf("got %d from user %s\n", input.Num, p.Addr.String())
 	return &pb.SingleData{Num: input.Num * input.Num}, nil
 }
 

@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+option go_package = "github.com/junhyuk0801/golang-grpc-practice/server_streaming/server/pb";
+
+package pb;
+
+service ServerStreaming {
+  rpc Call(SingleData) returns (stream SingleData) {}
+}
+
+message SingleData {
+  int32 num = 1;
+}
