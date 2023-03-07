@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/junhyuk0801/golang-grpc-practice/server_streaming/server/pb"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/peer"
 	"log"
 	"net"
 )
@@ -16,7 +17,8 @@ type ServerStreamingServer struct {
 }
 
 func (s *ServerStreamingServer) Call(input *pb.SingleData, stream pb.ServerStreaming_CallServer) error {
-	log.Printf("got %d\n", input.Num)
+	p, _ := peer.FromContext(stream.Context())
+	log.Printf("got %d from user %s\n", input.Num, p.Addr.String())
 	for i := int32(0); i < input.Num; i++ {
 		err := stream.Send(&pb.SingleData{Num: i})
 		if err != nil {
