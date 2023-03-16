@@ -1,0 +1,11 @@
+version: "3.0"
+services:
+  server:
+    build: ./server
+    image: junhyuk0801/grpc-server_streaming:server
+    ports:
+      - "8484:8484"
+
+  client:
+    build: ./client
+    image: junhyuk0801/grpc-server_streaming:client

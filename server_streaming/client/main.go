@@ -12,7 +12,7 @@ import (
 	"time"
 )
 
-const HOST string = "localhost"
+const HOST string = "server"
 const PORT int = 8484
 
 type ServerStreamingClient struct {

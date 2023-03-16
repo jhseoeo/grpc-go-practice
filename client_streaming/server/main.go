@@ -10,7 +10,7 @@ import (
 	"net"
 )
 
-const HOST string = "localhost"
+const HOST string = "0.0.0.0"
 const PORT int = 8484
 
 type ClientStreamingServer struct {
